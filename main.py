@@ -23,6 +23,20 @@ from aiogram.types import (
 from dotenv import load_dotenv
 
 import db
+import os, threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
+
+class Ping(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"ok")
+
+def run_server():
+    port = int(os.getenv("PORT", 10000))
+    HTTPServer(("0.0.0.0", port), Ping).serve_forever()
+
+threading.Thread(target=run_server, daemon=True).start()
 
 # .env нужно загрузить ДО того, как читаем из него значения
 load_dotenv()
